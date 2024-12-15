@@ -10,12 +10,12 @@ Rently is a decentralized platform designed to streamline and secure rent paymen
 - Decentralized contract management with no reliance on intermediaries.
 
 ## Contract Details
-- *Contract Address*: 0x\<your_contract_address_here>
-- *Network*: Ethereum Testnet (e.g., Sepolia or Mantle Sepolia)
+- *Contract Address*: 0x90636728aF63da90e46a531579E902C19F4E2B02
+- *Network*: Ethereum Testnet (Mantle Sepolia)
 
 ## Deployment
-- *Contract Address*: View on Explorer
-- *Coin Used*: ETH (Sepolia Testnet ETH)
+- *Contract Address*: [View on Explorer](https://sepolia.mantlescan.xyz/address/0x90636728af63da90e46a531579e902c19f4e2b02)
+- *Coin Used*:  MNT (Mantle Sepolia Testnet MNT)
 
 ## How to Use
 1. *Set Tenant Address*: Landlords can assign tenants by entering their address.
