@@ -1,0 +1,194 @@
+/* ********** common setting ********** */
+h2 {
+    font-size: 2.8rem !important;
+    font-weight: 700;
+}
+
+a,
+button {
+    cursor: pointer;
+}
+
+.jumbotron {
+    margin-bottom: 0 !important;
+}
+
+.atlas-cta {
+    border-radius: 22px !important;
+    padding: 12px 30px !important;
+    font-weight: 700;
+    transition: .3s ease-in-out !important;
+}
+
+.atlas-cta:hover {
+    text-decoration: none;
+    transform: translateY(-5px);
+}
+
+.atlas-cta-wide {
+    width: 100%;
+}
+
+.cta-green {
+    background: #8B4513; /* A brown color */
+    color: #FFFFFF;
+}
+
+.cta-green:hover {
+    color: #FFFFFF;
+    background: #6A2F1F; /* A darker brown */
+}
+
+.cta-blue {
+    background: #D2691E; /* A burnt orange */
+    color: #FFFFFF;
+}
+
+.cta-blue:hover {
+    color: #FFFFFF;
+    background: #8B4513; /* A darker brown */
+}
+
+.cta-ghost {
+    border: 2px solid #8B4513 !important;
+    color: #8B4513;
+}
+
+.cta-ghost:hover {
+    color: #FFFFFF;
+    background: #6A2F1F; /* Dark brown hover */
+}
+
+#banner {
+    background: linear-gradient(135deg, #D2691E, #FFF8DC); /* Gradient of burnt orange and light cream */
+    color: #192440;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+/********** banner **********/
+#banner header {
+    overflow: hidden;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+#banner header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+/********** feature (skew background) **********/
+.feature {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.feature:nth-child(odd) {
+    background: linear-gradient(135deg, #D2691E, #FFF8DC);/* Light cream background */
+}
+
+.feature:nth-child(even) {
+    background: linear-gradient(135deg, #D2691E, #FFF8DC); /* A brown background */
+    color: #FFFFFF;
+}
+
+/********** price table **********/
+#price-table {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+    text-align: center;
+}
+
+#price-table__premium {
+    background: #8B4513;
+    color: #FFFFFF;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+#price-table ul {
+    list-style: none;
+    padding: 0;
+}
+
+#price-table ul li {
+    padding: 5px 0;
+}
+
+/********** contact **********/
+#contact {
+    background: #6A2F1F; /* Dark brown background */
+    color: #FFF8DC; /* Light cream text */
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+#contact ul {
+    list-style: none;
+    padding: 0;
+}
+
+#contact ul li {
+    padding: 3px 0;
+}
+
+#contact form input,
+#contact form textarea {
+    background: transparent;
+    border: 1px solid #D2691E; /* Burnt orange border */
+    color: #FFF8DC;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+#contact form button {
+    background: #8B4513;
+    color: #FFF8DC;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: .3s;
+}
+
+#contact form button:hover {
+    background: #6A2F1F; /* Darker brown */
+    color: #FFFFFF;
+}
+
+/********** copyright **********/
+#copyright {
+    background: #6A2F1F;
+    color: #FFF8DC;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+#copyright #social-media a {
+    display: inline-block;
+    margin: 0 10px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+    background: #FFF8DC;
+    color: #6A2F1F;
+    transition: .4s ease;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+#copyright #social-media a:hover {
+    background: #D2691E; /* Burnt orange hover */
+    color: #FFFFFF;
+}
+
+/********** RWD **********/
+@media (max-width: 575px) {
+    #banner h1 {
+        font-size: 2.5rem;
+    }
+}

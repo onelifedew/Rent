@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Payment Contract</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.0.0/dist/ethers.umd.min.js"></script>
+	<style>
+		/* ********** Common Settings ********** */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFF8DC; /* Light cream background */
+    color: #6A2F1F; /* Dark brown text */
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2 {
+    color: #8B4513; /* Burnt brown color for headings */
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+/* ********** Rent Payment Form Styling ********** */
+div {
+    margin: 2rem;
+    padding: 2rem;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #8B4513; /* Brown color for subheadings */
+}
+
+label {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 0.8rem;
+    border-radius: 5px;
+    border: 1px solid #D2691E; /* Burnt orange border */
+    width: calc(100% - 1.6rem);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    background: transparent;
+    color: #6A2F1F;
+}
+
+button {
+    background-color: #8B4513;
+    color: #FFF8DC;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    margin-top: 1rem;
+}
+
+button:hover {
+    background-color: #6A2F1F;
+    color: #FFF8DC;
+}
+
+button:focus {
+    outline: none;
+}
+
+/* ********** Rent Details Display ********** */
+#currentRentDue {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    color: #8B4513;
+}
+
+#tenantAddress, #rentAmount, #dueInDays, #penalty {
+    margin-bottom: 1rem;
+}
+
+/* ********** Responsive Design ********** */
+@media (max-width: 575px) {
+    div {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+	</style>
+</head>
+<body>
+
+    <h1>Rent Payment</h1>
+
+    <div>
+        <h2>Set Tenant Address</h2>
+        <label for="tenantAddress">Tenant Address:</label>
+        <input type="text" id="tenantAddress" placeholder="Enter Tenant Address" />
+        <button id="setTenant">Set Tenant Address</button>
+    </div>
+
+    <div>
+        <h2>Set Rent Details</h2>
+        <label for="rentAmount">Rent Amount:</label>
+        <input type="number" id="rentAmount" placeholder="Enter Rent Amount" />
+        <br>
+        <label for="dueInDays">Due in Days:</label>
+        <input type="number" id="dueInDays" placeholder="Enter Days" />
+        <br>
+        <label for="penalty">Penalty:</label>
+        <input type="number" id="penalty" placeholder="Enter Penalty Amount" />
+        <br>
+        <button id="setRentDetails">Set Rent Details</button>
+    </div>
+
+    <div>
+        <h2>Pay Rent</h2>
+        <button id="payRent">Pay Rent</button>
+    </div>
+
+    <div>
+        <h2>Check Rent Details</h2>
+        <button id="getRentDue">Get Current Rent Due</button>
+        <p id="currentRentDue"></p>
+    </div>
+
+    <script>
+        // Initialize ethers.js
+        let provider;
+        let signer;
+        let rentPaymentContract;
+
+        const contractAddress = "0x90636728aF63da90e46a531579E902C19F4E2B02";  // Replace with your deployed contract address
+        const contractABI = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tenant",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "penaltyAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "date",
+				"type": "uint256"
+			}
+		],
+		"name": "LatePayment",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "payRent",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tenant",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "date",
+				"type": "uint256"
+			}
+		],
+		"name": "RentPaid",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_rentAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_dueInDays",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_penalty",
+				"type": "uint256"
+			}
+		],
+		"name": "setRentDetails",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_tenant",
+				"type": "address"
+			}
+		],
+		"name": "setTenant",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "tenant",
+				"type": "address"
+			}
+		],
+		"name": "TenantSet",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "withdrawFunds",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "dueDate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getCurrentRentDue",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getDueDate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "isRentPaid",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "landlord",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "penalty",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rentAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "tenant",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+        // Set up the contract
+        async function setup() {
+            if (window.ethereum) {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                rentPaymentContract = new ethers.Contract(contractAddress, contractABI, signer);
+            } else {
+                alert("MetaMask is required!");
+            }
+        }
+
+        // Set tenant address
+        document.getElementById('setTenant').onclick = async () => {
+            const tenantAddress = document.getElementById('tenantAddress').value;
+            try {
+                const tx = await rentPaymentContract.setTenant(tenantAddress);
+                await tx.wait();
+                alert('Tenant address set successfully!');
+            } catch (error) {
+                console.error(error);
+                alert('Error setting tenant address.');
+            }
+        };
+
+        // Set rent details
+        document.getElementById('setRentDetails').onclick = async () => {
+    const rentAmountInEther = document.getElementById('rentAmount').value;
+    const dueInDays = document.getElementById('dueInDays').value;
+    const penaltyInEther = document.getElementById('penalty').value;
+
+    try {
+        // Convert Ether to Wei
+        const rentAmount = ethers.utils.parseEther(rentAmountInEther);
+        const penalty = ethers.utils.parseEther(penaltyInEther);
+
+        const tx = await rentPaymentContract.setRentDetails(
+            rentAmount,   // Rent amount in Wei
+            dueInDays,
+            penalty       // Penalty amount in Wei
+        );
+        await tx.wait();
+        alert('Rent details updated successfully!');
+    } catch (error) {
+        console.error(error);
+        alert('Error setting rent details.');
+    }
+};
+
+
+        // Pay rent
+        document.getElementById('payRent').onclick = async () => {
+            const currentRentDue = await rentPaymentContract.getCurrentRentDue();
+            try {
+                const tx = await rentPaymentContract.payRent({ value: currentRentDue });
+                await tx.wait();
+                alert('Rent paid successfully!');
+            } catch (error) {
+                console.error(error);
+                alert('Error paying rent.');
+            }
+        };
+
+        // Get current rent due
+        document.getElementById('getRentDue').onclick = async () => {
+            try {
+                const rentDue = await rentPaymentContract.getCurrentRentDue();
+		        const nextDueDate = await rentPaymentContract.getDueDate();
+				const dueDate = new Date(nextDueDate * 1000).toLocaleString();
+                document.getElementById('currentRentDue').innerText = `Current Rent Due: ${ethers.utils.formatEther(rentDue)} ETH and the next due date is ${dueDate}`;
+            } catch (error) {
+                console.error(error);
+                alert('Error fetching current rent due.');
+            }
+        };
+
+        // Initialize the contract
+        setup();
+    </script>
+</body>
+</html>
