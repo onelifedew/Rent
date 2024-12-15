@@ -32,6 +32,12 @@ The frontend allows users to interact with the Rently smart contract via an easy
 3. Configure the frontend to interact with the deployed contract.
 4. Connect using MetaMask to start managing rent payments securely.
 
+## images
+![rent1](https://github.com/user-attachments/assets/ab91db47-ce84-4780-bc05-8dee7e20bb9e)
+
+![rent2](https://github.com/user-attachments/assets/78e30f40-e2c7-420d-9544-f1a847d079d8)
+
+
 ## Future Enhancements
 - Integration with IPFS for storing rent-related documents and contracts.
 - Implement automated notifications for rent due dates and penalties.
