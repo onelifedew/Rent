@@ -37,6 +37,11 @@ The frontend allows users to interact with the Rently smart contract via an easy
 
 ![rent2](https://github.com/user-attachments/assets/78e30f40-e2c7-420d-9544-f1a847d079d8)
 
+![rent3](https://github.com/user-attachments/assets/901fa761-94c4-4429-9af4-bdf9b809446e)
+
+
+
+
 
 ## Future Enhancements
 - Integration with IPFS for storing rent-related documents and contracts.
